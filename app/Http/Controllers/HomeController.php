@@ -51,14 +51,27 @@ class HomeController extends Controller
         $totalInactivos = 0;
 
         foreach ($regimenes as $key => $regimen) {
-
-            $activos = Personal::where('id_tipo_personal', 1) //ACTIVO
-                                ->count();
-            $inactivos = Personal::where('id_tipo_personal', 2) //SIN VINCULO
-                                  ->count();
-    
+        $subquery = "
+                WITH UltimosVinculos AS (
+                        SELECT 
+                    v.personal_id, 
+                    v.id_condicion_laboral, 
+                    v.fecha_ini
+                FROM vinculos v
+                WHERE v.fecha_ini = (
+                    SELECT MAX(fecha_ini) 
+                    FROM vinculos 
+                    WHERE personal_id = v.personal_id
+                    )
+                )
+                SELECT COUNT(*) as total
+                FROM UltimosVinculos
+                WHERE id_condicion_laboral = ?;
+                ";
+            $activos = DB::select($subquery, [$regimen->id])[0]->total;
+            $inactivos = DB::select($subquery, [$regimen->id])[0]->total;
             $regimenData['labels'][] = $regimen->nombre;
-            $regimenData['datasets'][0]['data'][] = $activos + $inactivos;
+            $regimenData['datasets'][0]['data'][] = $activos;
             $regimenData['datasets'][0]['backgroundColor'][] = $colors[$key % count($colors)];
             $totalActivos += $activos;
             $totalInactivos += $inactivos;

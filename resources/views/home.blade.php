@@ -248,8 +248,10 @@ var tablacampos2= $('#cumplir30Table').DataTable({
 
 
     document.addEventListener('DOMContentLoaded', function() {
+
     // Obtener datos del backend directamente pasados a la vista
     const regimenData = JSON.parse(@json($regimenData));
+    console.log(regimenData);
     const activoInactivoData = JSON.parse(@json($activoInactivoData));
 
     // Crear gráfico de régimen

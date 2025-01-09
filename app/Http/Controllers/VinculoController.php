@@ -25,6 +25,7 @@ class VinculoController extends Controller
         $prefixedColumns = array_map(function ($column) {
             return "vinculos.$column";
         }, $columns);
+        
         //EVALUAR
         // Construir la consulta base con las columnas seleccionadas dinámicamente.
         $reg = DB::table('vinculos')
